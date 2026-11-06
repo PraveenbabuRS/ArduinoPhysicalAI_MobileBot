@@ -7,7 +7,6 @@ A small CNN looks at the road ahead through a single USB camera and outputs a st
 
 ## Demo
 
-[Watch a 12 s clip of the rover driving](docs/demo.mp4)
 https://github.com/user-attachments/assets/1ace6272-8b3a-4374-ac77-09aaaaf123d5
 
 ## Overview
