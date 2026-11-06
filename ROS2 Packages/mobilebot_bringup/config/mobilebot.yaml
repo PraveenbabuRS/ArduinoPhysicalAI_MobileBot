@@ -1,0 +1,141 @@
+# Vehicle and operator configuration.
+#
+# Values marked MEASURE are placeholders that must be replaced with bench
+# measurements before any data collection. Collecting a dataset under one set
+# of shaping parameters and then changing them makes the dataset inhomogeneous,
+# so freeze these before the first recorded run and log them with the data.
+
+teleop_translator:
+  ros__parameters:
+    publish_rate_hz: 50.0
+    joy_timeout_s: 0.15
+
+    # Array indices. The Manta pad is 1-based on its label; these are not.
+    axis_steer: 0        # user's axis 1
+    axis_drive: 1        # user's axis 2
+    btn_rearm: 0         # user's button 1
+    btn_estop: 2         # user's button 3
+    btn_deadman: 4       # user's button 5
+    btn_steer_hold: 5    # R1 -- CONFIRM whether this is index 5 or index 4
+    btn_record: 8        # user's button 9
+
+    invert_steer_axis: true   # MEASURE: set true if left D-pad steers right
+    invert_drive_axis: false
+
+    # Steering shaping. Rate ramps from base to max over accel_time.
+    steer_rate_base: 0.6       # normalised units/s on a tap
+    steer_rate_max: 2.5        # normalised units/s held  -> full lock in 0.4 s
+    steer_accel_time: 0.5
+    steer_centre_rate: 1.8     # return-to-centre rate when R1 released
+    max_steer_rad: 0.436       # 25 deg; mechanical limit is 40 deg
+
+    speed_step: 0.1
+    max_speed: 0.5
+    max_reverse_speed: 0.2
+
+safety_arbiter:
+  ros__parameters:
+    publish_rate_hz: 50.0
+    teleop_timeout_s: 0.15
+    # Separate from teleop_timeout_s: policy runs ~17 Hz (119 ms worst-case
+    # pipeline latency measured) vs teleop's 50 Hz. Sharing one timeout left
+    # only ~30 ms margin before a spurious mid-drive FAILSAFE.
+    policy_timeout_s: 0.30
+    mcu_timeout_s: 0.30
+    image_timeout_s: 0.30
+
+    max_steer_rad: 0.436
+    max_speed: 0.5
+    max_reverse_speed: 0.2
+    steer_slew_rad_s: 3.0
+    speed_slew_m_s2: 1.0
+
+    require_estop_for_auto: true
+    estop_confirmed: false     # flip only once a physical e-stop exists
+
+hardware_bridge:
+  ros__parameters:
+    command_rate_hz: 50.0
+    # rad <-> normalised conversion lives here so vehicle calibration never
+    # requires reflashing the MCU.
+    max_steer_rad: 0.436
+    # MEASURE: open-loop speed constant, normalised throttle per m/s.
+    # Drive a measured distance at a known throttle and solve.
+    # 64 mm wheels = 201 mm per revolution.
+    speed_to_throttle: 2.0
+    imu_frame_id: imu_link
+    handshake_attempts: 10
+    arm_retry_period_s: 0.2
+    stats_period_s: 5.0
+
+usb_cam:
+  ros__parameters:
+    video_device: /dev/video2   # CONFIRMED: Arducam enumerates here, not video0
+    # pixel_format is raw_mjpeg -- genuine zero-copy passthrough. This REQUIRES
+    # usb_cam built from ros-drivers/usb_cam PR #378, which fixes a string-
+    # comparison bug in src/usb_cam_node.cpp (checked for "mjpeg", actual value
+    # is "raw_mjpeg", so the passthrough branch never matched). The stock apt
+    # package as of this writing does NOT have this fix -- confirm your build
+    # includes it before trusting this setting, or you'll see the solid-green
+    # corruption from ros-drivers/usb_cam#346 again.
+    image_width: 640
+    image_height: 480
+    pixel_format: raw_mjpeg
+    io_method: mmap
+    framerate: 30.0
+    frame_id: camera_frame
+    camera_name: arducam
+    # Locked exposure. Auto-exposure hunting is a first-order source of
+    # illumination domain shift between recording and inference.
+    auto_exposure: 1
+    exposure: 156
+    auto_white_balance: false
+
+data_recorder:
+  ros__parameters:
+    output_dir: "/mnt/eMMC/mobilebot_data"   # MEASURE: confirm actual eMMC mount path
+    storage_id: mcap
+
+    wheelbase_m: 0.140
+    track_m: 0.146
+    wheel_diameter_m: 0.064
+    servo_centre_deg: 90.0
+
+    preprocessing_version: "crop96-640x384-resize160x120-v1"   # set to the training repo's git hash once training starts
+    crop_x: 0
+    crop_y: 96
+    crop_width: 640
+    crop_height: 384
+    resize_width: 160
+    resize_height: 120
+
+policy_node:
+  ros__parameters:
+    backend: onnx
+    # MEASURE / SET: path to the exported model on the robot's own filesystem.
+    # Copy policy.onnx (and its policy.json sidecar -- both are required) from
+    # the training machine to the UNO Q before enabling use_policy:=true.
+    model_path: "/mnt/eMMC/mobilebot_models/policy.onnx"
+    max_steer_rad: 0.436   # MUST match hardware_bridge and safety_arbiter
+    # index = speed class. class 0 = idle, class 1 = forward, per the 2-class
+    # collapse used for this training run. 0.1 m/s matches the single teleop
+    # step used during data collection, so the policy's "forward" output means
+    # the same physical speed the human demonstrated.
+    speed_setpoints_mps: [0.0, 0.1]
+    stats_period_s: 5.0
+    enforce_contract_version: true
+    # CONFIRMED under the full graph (recorder + hardware_bridge both active):
+    # threads=1 beats threads=2 on every metric -- lower CPU (136.5% vs
+    # 198.3%), higher throughput (16-18Hz vs 9.9-15.3Hz total pipeline), and
+    # critically RTT max nearly halved (87ms vs 146ms, against a 150ms MCU
+    # watchdog). The isolated benchmark ranked threads=2 higher (14ms vs
+    # 26ms) -- that ranking does NOT hold under contention; a bigger internal
+    # pool just means policy_node fights harder with the other 5 processes for
+    # the same 4 cores. Trust contended measurements over isolated ones here.
+    onnx_intra_op_threads: 1
+    onnx_inter_op_threads: 1
+    # Still worth applying even with threads=1 recovering most of the margin:
+    # 87ms max RTT is better than 146ms but still ~4x the 22ms baseline, i.e.
+    # real margin but not a lot of it. 0 = unlimited; try 10.0 alongside the
+    # SCHED_FIFO elevation in hardware_bridge for defense in depth.
+    max_inference_hz: 0.0

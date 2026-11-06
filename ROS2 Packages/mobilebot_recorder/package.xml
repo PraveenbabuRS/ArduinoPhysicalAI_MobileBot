@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>mobilebot_recorder</name>
+  <version>0.1.0</version>
+  <description>
+    Records the ROS2 data for policy training using rosbag2 MCAP.
+  </description>
+  <maintainer email="praveenbabu4542@gmail.com">Praveenbabu R S</maintainer>
+  <license>MIT</license>
+
+  <depend>rclpy</depend>
+  <depend>sensor_msgs</depend>
+  <depend>ackermann_msgs</depend>
+  <depend>mobilebot_msgs</depend>
+  <depend>rcl_interfaces</depend>
+  <depend>rosbag2_py</depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

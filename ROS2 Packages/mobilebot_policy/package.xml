@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>mobilebot_policy</name>
+  <version>0.1.0</version>
+  <description>
+    Runs the trained behaviour-cloning policy on-device: decodes the camera
+    stream, applies the SAME preprocessing contract used at training time, runs
+    ONNX Runtime inference, and publishes AckermannDriveStamped on /policy/cmd.
+    safety_arbiter decides whether that command is ever allowed to reach the
+    motors -- this node only proposes.
+  </description>
+  <maintainer email="praveenbabu4542@gmail.com">Praveenbabu R S</maintainer>
+  <license>MIT</license>
+
+  <depend>rclpy</depend>
+  <depend>sensor_msgs</depend>
+  <depend>ackermann_msgs</depend>
+  <depend>mobilebot_msgs</depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

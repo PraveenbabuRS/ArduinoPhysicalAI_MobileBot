@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+
+# ROS 2 / colcon
+install/
+log/
+
+# Datasets, recordings and training outputs (large, regenerable)
+*.mcap
+*.parquet
+*.pt
+*.pth
+*.ckpt
+runs/
+datasets/
+
+# Arduino's app_utils is not redistributed; copy it in per the README
+ROS2 Packages/mobilebot_bridge/mobilebot_bridge/app_utils/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

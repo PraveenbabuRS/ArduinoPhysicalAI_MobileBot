@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>mobilebot_bridge</name>
+  <version>0.1.0</version>
+  <description>
+    Adapter between the ROS 2 graph and the STM32 over the Arduino Router
+    Bridge. This is the only package that requires the arduino-router socket,
+    which is why it is isolated: everything else can run on a dev machine.
+  </description>
+  <maintainer email="praveenbabu4542@gmail.com">Praveenbabu R S</maintainer>
+  <license>MIT</license>
+
+  <depend>rclpy</depend>
+  <depend>sensor_msgs</depend>
+  <depend>ackermann_msgs</depend>
+  <depend>mobilebot_msgs</depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

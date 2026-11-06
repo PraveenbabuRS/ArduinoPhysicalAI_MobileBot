@@ -1,0 +1,492 @@
+Policy node alone tested:
+
+No optimization : 
+ros2 run mobilebot_policy benchmark_inference --model /mnt/eMMC/mobilebot_models/policy.onnx
+model: /mnt/eMMC/mobilebot_models/policy.onnx
+input shape: (1, 3, 120, 160)
+preprocessing_version: crop96-640x384-resize160x120-v1
+using 200 synthetic random frames (no --dataset given)
+200 iterations (after 20 warmup):
+  min    9.19 ms
+  mean   9.92 ms
+  p50    9.83 ms
+  p95    10.74 ms
+  max    11.41 ms
+  implied max rate: 100.9 Hz (model-only, no decode/ROS)
+
+Threads = 1
+ros2 run mobilebot_policy benchmark_inference --model /mnt/eMMC/mobilebot_models/policy.onnx --threads 1
+model: /mnt/eMMC/mobilebot_models/policy.onnx
+input shape: (1, 3, 120, 160)
+preprocessing_version: crop96-640x384-resize160x120-v1
+using 200 synthetic random frames (no --dataset given)
+200 iterations (after 20 warmup):
+  min    24.97 ms
+  mean   26.05 ms
+  p50    25.65 ms
+  p95    29.30 ms
+  max    31.21 ms
+  implied max rate: 38.4 Hz (model-only, no decode/ROS)
+
+Threads = 2
+root@praveen:~/ros2_ws# ros2 run mobilebot_policy benchmark_inference --model /mnt/eMMC/mobilebot_models/policy.onnx --threads 2
+model: /mnt/eMMC/mobilebot_models/policy.onnx
+input shape: (1, 3, 120, 160)
+preprocessing_version: crop96-640x384-resize160x120-v1
+using 200 synthetic random frames (no --dataset given)
+200 iterations (after 20 warmup):
+  min    13.47 ms
+  mean   13.99 ms
+  p50    13.84 ms
+  p95    14.91 ms
+  max    16.98 ms
+  implied max rate: 71.5 Hz (model-only, no decode/ROS)
+
+
+
+Full system test::
+
+No optimization:
+
+[policy_node-6] [INFO] [1787093214.233170090] [policy_node]: preprocessing contract OK: crop96-640x384-resize160x120-v1
+[policy_node-6] [INFO] [1787093214.422563792] [policy_node]: policy_node up: backend=onnx contract=crop96-640x384-resize160x120-v1 speed_setpoints=[0.0, 0.1]
+[policy_node-6] [INFO] [1787093219.291761653] [policy_node]: frames 61 (failed 0) | decode 9.6/16.2/36.1 ms (min/avg/max), effective 61.9 Hz | preprocess 7.4/11.9/25.4 ms (min/avg/max), effective 84.3 Hz | inference 20.5/33.9/70.9 ms (min/avg/max), effective 29.5 Hz | total 41.4/62.1/114.5 ms (min/avg/max), effective 16.1 Hz
+[policy_node-6] [INFO] [1787093224.293919218] [policy_node]: frames 113 (failed 0) | decode 9.8/19.3/40.4 ms (min/avg/max), effective 51.9 Hz | preprocess 7.0/14.6/38.5 ms (min/avg/max), effective 68.4 Hz | inference 18.5/36.1/77.8 ms (min/avg/max), effective 27.7 Hz | total 39.1/70.2/129.0 ms (min/avg/max), effective 14.2 Hz
+[policy_node-6] [INFO] [1787093229.305547259] [policy_node]: frames 169 (failed 0) | decode 9.6/16.3/47.0 ms (min/avg/max), effective 61.3 Hz | preprocess 7.4/11.1/21.6 ms (min/avg/max), effective 90.1 Hz | inference 20.6/35.8/76.9 ms (min/avg/max), effective 28.0 Hz | total 40.6/63.3/120.8 ms (min/avg/max), effective 15.8 Hz
+[policy_node-6] [INFO] [1787093234.316017765] [policy_node]: frames 219 (failed 0) | decode 9.7/19.5/39.6 ms (min/avg/max), effective 51.3 Hz | preprocess 7.6/13.1/28.1 ms (min/avg/max), effective 76.2 Hz | inference 19.1/32.4/51.2 ms (min/avg/max), effective 30.8 Hz | total 39.5/65.2/107.4 ms (min/avg/max), effective 15.3 Hz
+[policy_node-6] [INFO] [1787093239.353211482] [policy_node]: frames 276 (failed 0) | decode 9.6/17.0/30.2 ms (min/avg/max), effective 58.9 Hz | preprocess 7.4/13.3/39.9 ms (min/avg/max), effective 75.1 Hz | inference 20.2/34.1/62.3 ms (min/avg/max), effective 29.3 Hz | total 38.0/64.7/107.4 ms (min/avg/max), effective 15.4 Hz
+[policy_node-6] [INFO] [1787093244.356525143] [policy_node]: frames 335 (failed 0) | decode 9.7/16.3/39.0 ms (min/avg/max), effective 61.5 Hz | preprocess 7.2/12.0/27.1 ms (min/avg/max), effective 83.0 Hz | inference 15.9/33.2/62.8 ms (min/avg/max), effective 30.1 Hz | total 39.8/61.8/125.5 ms (min/avg/max), effective 16.2 Hz
+[policy_node-6] [INFO] [1787093249.362068959] [policy_node]: frames 389 (failed 0) | decode 9.5/17.2/36.4 ms (min/avg/max), effective 58.2 Hz | preprocess 6.9/14.1/43.4 ms (min/avg/max), effective 70.8 Hz | inference 22.8/35.6/81.2 ms (min/avg/max), effective 28.1 Hz | total 44.3/67.0/122.5 ms (min/avg/max), effective 14.9 Hz
+
+top when all ros nodes are active.
+top - 22:47:22 up 39 min,  0 user,  load average: 6.71, 2.95, 1.23
+Tasks:  11 total,   4 running,   7 sleeping,   0 stopped,   0 zombie
+%Cpu(s): 89.5 us,  6.7 sy,  0.0 ni,  0.6 id,  0.0 wa,  2.4 hi,  0.8 si,  0.0 st 
+MiB Mem :   3669.9 total,    822.0 free,   1841.2 used,   1212.3 buff/cache     
+MiB Swap:   1834.9 total,   1834.9 free,      0.0 used.   1828.7 avail Mem 
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND                                                                                       
+    800 root      20   0 2054292 336236 126388 R 235.4   8.9   1:14.00 policy_node                                                                                   
+    799 root      20   0 1157516 211440  39076 R  49.7   5.6   0:17.61 data_recorder                                                                                 
+    796 root      20   0 1078344 201896  33580 R  40.4   5.4   0:15.35 safety_arbiter                                                                                
+    795 root      20   0 1142716 201052  33516 S  28.5   5.4   0:11.70 teleop_translat                                                                               
+    798 root      20   0 1232956 223656  62940 S  10.9   6.0   0:05.07 usb_cam_node_ex                                                                               
+    779 root      20   0 1152024 204500  32228 S   0.3   5.4   0:03.01 ros2                                                                                          
+      1 root      20   0    4868   3956   3240 S   0.0   0.1   0:00.14 bash                                                                                          
+     24 root      20   0    5000   4020   3240 S   0.0   0.1   0:00.34 bash                                                                                          
+    506 root      20   0    4868   3968   3248 S   0.0   0.1   0:00.08 bash                                                                                          
+    778 root      20   0    9228   5084   2960 R   0.0   0.1   0:00.07 top                                                                                           
+    797 root      20   0 1092488 210828  35108 S   0.0   5.6   0:02.63 hardware_bridge  
+
+hardware_bridge is not configured so less utilization.
+
+
+no optimization without data_recorder (Junk)
+
+[policy_node-5] [INFO] [1787093761.332877384] [policy_node]: policy_node up: backend=onnx contract=crop96-640x384-resize160x120-v1 speed_setpoints=[0.0, 0.1]
+[policy_node-5] [INFO] [1787093766.181024359] [policy_node]: frames 82 (failed 0) | decode 8.2/13.6/29.6 ms (min/avg/max), effective 73.5 Hz | preprocess 7.3/11.0/35.5 ms (min/avg/max), effective 90.5 Hz | inference 12.5/23.3/65.3 ms (min/avg/max), effective 42.8 Hz | total 33.5/48.3/92.3 ms (min/avg/max), effective 20.7 Hz
+[policy_node-5] [INFO] [1787093771.215029528] [policy_node]: frames 174 (failed 0) | decode 9.3/12.5/21.4 ms (min/avg/max), effective 80.3 Hz | preprocess 7.3/9.9/20.8 ms (min/avg/max), effective 101.5 Hz | inference 12.9/23.0/52.3 ms (min/avg/max), effective 43.5 Hz | total 30.9/45.4/86.7 ms (min/avg/max), effective 22.0 Hz
+[policy_node-5] [INFO] [1787093776.269536118] [policy_node]: frames 259 (failed 0) | decode 9.5/13.2/24.9 ms (min/avg/max), effective 75.8 Hz | preprocess 7.0/9.6/18.8 ms (min/avg/max), effective 104.2 Hz | inference 13.1/23.2/67.0 ms (min/avg/max), effective 43.1 Hz | total 32.0/46.2/85.8 ms (min/avg/max), effective 21.7 Hz
+[policy_node-5] [INFO] [1787093781.322689382] [policy_node]: frames 341 (failed 0) | decode 9.4/13.8/32.0 ms (min/avg/max), effective 72.7 Hz | preprocess 7.4/10.5/24.6 ms (min/avg/max), effective 94.8 Hz | inference 12.8/25.5/64.6 ms (min/avg/max), effective 39.3 Hz | total 31.5/50.0/87.2 ms (min/avg/max), effective 20.0 Hz
+[policy_node-5] [INFO] [1787093786.385379060] [policy_node]: frames 431 (failed 0) | decode 9.3/13.6/31.3 ms (min/avg/max), effective 73.5 Hz | preprocess 7.3/10.3/20.8 ms (min/avg/max), effective 96.8 Hz | inference 14.9/23.7/52.5 ms (min/avg/max), effective 42.1 Hz | total 35.3/47.9/83.0 ms (min/avg/max), effective 20.9 Hz
+[policy_node-5] [INFO] [1787093791.411133451] [policy_node]: frames 516 (failed 0) | decode 9.4/13.3/31.7 ms (min/avg/max), effective 75.0 Hz | preprocess 7.2/10.2/25.7 ms (min/avg/max), effective 97.6 Hz | inference 13.4/22.6/50.9 ms (min/avg/max), effective 44.2 Hz | total 33.3/46.4/89.1 ms (min/avg/max), effective 21.6 Hz
+[policy_node-5] [INFO] [1787093796.473941326] [policy_node]: frames 605 (failed 0) | decode 9.5/13.8/38.6 ms (min/avg/max), effective 72.3 Hz | preprocess 7.1/10.2/29.0 ms (min/avg/max), effective 98.4 Hz | inference 15.1/23.3/58.3 ms (min/avg/max), effective 42.9 Hz | total 33.4/47.4/114.5 ms (min/avg/max), effective 21.1 Hz
+[policy_node-5] [INFO] [1787093801.485031224] [policy_node]: frames 686 (failed 0) | decode 9.5/14.3/37.4 ms (min/avg/max), effective 69.9 Hz | preprocess 7.4/10.7/22.2 ms (min/avg/max), effective 93.8 Hz | inference 14.1/24.5/60.2 ms (min/avg/max), effective 40.8 Hz | total 34.9/49.7/83.9 ms (min/avg/max), effective 20.1 Hz
+[policy_node-5] [INFO] [1787093806.529746617] [policy_node]: frames 770 (failed 0) | decode 9.3/14.0/34.9 ms (min/avg/max), effective 71.5 Hz | preprocess 7.1/10.8/32.6 ms (min/avg/max), effective 92.6 Hz | inference 13.2/23.3/54.8 ms (min/avg/max), effective 42.9 Hz | total 31.2/48.3/106.0 ms (min/avg/max), effective 20.7 Hz
+[policy_node-5] [INFO] [1787093811.618298499] [policy_node]: frames 865 (failed 0) | decode 9.4/12.5/35.3 ms (min/avg/max), effective 79.7 Hz | preprocess 7.3/9.8/22.6 ms (min/avg/max), effective 102.4 Hz | inference 13.6/21.5/43.4 ms (min/avg/max), effective 46.6 Hz | total 31.9/44.0/92.7 ms (min/avg/max), effective 22.7 Hz
+
+top 
+top - 22:56:41 up 48 min,  0 user,  load average: 3.11, 1.41, 1.04
+Tasks:  10 total,   3 running,   7 sleeping,   0 stopped,   0 zombie
+%Cpu(s): 90.8 us,  5.4 sy,  0.0 ni,  0.7 id,  0.0 wa,  2.2 hi,  0.8 si,  0.0 st 
+MiB Mem :   3669.9 total,    998.1 free,   1661.6 used,   1215.0 buff/cache     
+MiB Swap:   1834.9 total,   1834.9 free,      0.0 used.   2008.3 avail Mem 
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND                                                                                       
+    950 root      20   0 2053868 336264 126256 R 293.4   8.9   2:02.29 policy_node                                                                                   
+    947 root      20   0 1077704 201596  33452 R  37.9   5.4   0:19.43 safety_arbiter                                                                                
+    946 root      20   0 1142064 200704  33352 S  27.2   5.3   0:14.51 teleop_translat                                                                               
+    949 root      20   0 1166756 219228  62772 S  10.0   5.8   0:05.81 usb_cam_node_ex                                                                               
+    948 root      20   0 1091836 210592  35040 S   0.3   5.6   0:02.62 hardware_bridge                                                                               
+   1053 root      20   0    9228   5060   2936 R   0.3   0.1   0:00.02 top                                                                                           
+      1 root      20   0    4868   3956   3240 S   0.0   0.1   0:00.14 bash                                                                                          
+     24 root      20   0    5000   4020   3240 S   0.0   0.1   0:00.34 bash                                                                                          
+    506 root      20   0    4972   3988   3248 S   0.0   0.1   0:00.10 bash                                                                                          
+    930 root      20   0 1151368 204616  32060 S   0.0   5.4   0:02.98 ros2
+
+No threads optimization Run 2
+
+[policy_node-6] [INFO] [1787147280.202676774] [policy_node]: frames 1380 (failed 0) | decode 10.3/15.6/50.3 ms (min/avg/max), effective 64.1 Hz | preprocess 7.3/10.0/23.0 ms (min/avg/max), effective 100.4 Hz | inference 24.7/39.5/72.3 ms (min/avg/max), effective 25.3 Hz | total 45.1/65.2/115.3 ms (min/avg/max), effective 15.3 Hz
+[hardware_bridge-3] [INFO] [1787147282.062829330] [hardware_bridge]: rtt min/avg/max 8.7/26.2/92.0 ms over 175 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787147285.317743697] [policy_node]: frames 1425 (failed 0) | decode 9.4/19.5/39.4 ms (min/avg/max), effective 51.4 Hz | preprocess 7.0/12.9/30.1 ms (min/avg/max), effective 77.3 Hz | inference 28.3/42.9/72.3 ms (min/avg/max), effective 23.3 Hz | total 47.5/75.5/132.7 ms (min/avg/max), effective 13.3 Hz
+[hardware_bridge-3] [INFO] [1787147287.021910830] [hardware_bridge]: rtt min/avg/max 9.2/25.1/71.4 ms over 177 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787147290.325171636] [policy_node]: frames 1464 (failed 0) | decode 11.0/28.1/67.7 ms (min/avg/max), effective 35.6 Hz | preprocess 7.7/20.3/37.1 ms (min/avg/max), effective 49.3 Hz | inference 25.9/52.1/86.6 ms (min/avg/max), effective 19.2 Hz | total 51.9/100.7/162.0 ms (min/avg/max), effective 9.9 Hz
+[hardware_bridge-3] [INFO] [1787147292.111746065] [hardware_bridge]: rtt min/avg/max 8.9/24.9/82.3 ms over 178 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787147295.385553983] [policy_node]: frames 1508 (failed 0) | decode 10.3/23.1/43.1 ms (min/avg/max), effective 43.3 Hz | preprocess 7.2/14.9/32.3 ms (min/avg/max), effective 67.0 Hz | inference 23.7/47.5/118.0 ms (min/avg/max), effective 21.0 Hz | total 44.1/85.7/171.2 ms (min/avg/max), effective 11.7 Hz
+[hardware_bridge-3] [INFO] [1787147297.138596825] [hardware_bridge]: rtt min/avg/max 8.9/25.7/77.0 ms over 172 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787147300.424197666] [policy_node]: frames 1558 (failed 0) | decode 10.5/18.0/51.4 ms (min/avg/max), effective 55.6 Hz | preprocess 7.3/12.5/32.3 ms (min/avg/max), effective 80.2 Hz | inference 31.2/44.9/87.2 ms (min/avg/max), effective 22.3 Hz | total 50.5/75.6/147.6 ms (min/avg/max), effective 13.2 Hz
+[hardware_bridge-3] [INFO] [1787147302.190576454] [hardware_bridge]: rtt min/avg/max 8.7/22.6/76.1 ms over 191 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787147305.462212441] [policy_node]: frames 1611 (failed 0) | decode 10.1/17.9/54.6 ms (min/avg/max), effective 55.9 Hz | preprocess 7.5/11.7/27.8 ms (min/avg/max), effective 85.8 Hz | inference 25.8/43.7/72.5 ms (min/avg/max), effective 22.9 Hz | total 44.5/73.4/131.0 ms (min/avg/max), effective 13.6 Hz
+[hardware_bridge-3] [INFO] [1787147307.199288343] [hardware_bridge]: rtt min/avg/max 8.7/28.2/146.1 ms over 159 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787147310.529363589] [policy_node]: frames 1665 (failed 0) | decode 9.5/16.3/53.4 ms (min/avg/max), effective 61.4 Hz | preprocess 7.3/11.6/32.9 ms (min/avg/max), effective 86.2 Hz | inference 21.5/39.0/71.8 ms (min/avg/max), effective 25.6 Hz | total 39.7/67.0/151.1 ms (min/avg/max), effective 14.9 Hz
+[hardware_bridge-3] [INFO] [1787147312.264465062] [hardware_bridge]: rtt min/avg/max 8.4/25.7/72.8 ms over 171 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787147315.579302327] [policy_node]: frames 1713 (failed 0) | decode 9.7/16.2/32.2 ms (min/avg/max), effective 61.6 Hz | preprocess 6.9/12.4/27.2 ms (min/avg/max), effective 80.4 Hz | inference 26.1/41.0/94.3 ms (min/avg/max), effective 24.4 Hz | total 44.5/69.8/124.2 ms (min/avg/max), effective 14.3 Hz
+[hardware_bridge-3] [INFO] [1787147317.206165651] [hardware_bridge]: rtt min/avg/max 8.7/25.2/81.2 ms over 176 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787147320.597423229] [policy_node]: frames 1760 (failed 0) | decode 10.2/18.3/47.7 ms (min/avg/max), effective 54.5 Hz | preprocess 7.2/11.1/26.0 ms (min/avg/max), effective 89.9 Hz | inference 20.6/43.5/75.5 ms (min/avg/max), effective 23.0 Hz | total 46.4/73.3/120.6 ms (min/avg/max), effective 13.7 Hz
+[hardware_bridge-3] [INFO] [1787147322.224894209] [hardware_bridge]: rtt min/avg/max 9.5/24.7/71.7 ms over 177 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787147325.803965251] [policy_node]: frames 1812 (failed 0) | decode 10.4/17.5/43.5 ms (min/avg/max), effective 57.0 Hz | preprocess 7.5/12.3/35.2 ms (min/avg/max), effective 81.2 Hz | inference 23.2/44.2/92.7 ms (min/avg/max), effective 22.6 Hz | total 41.9/74.4/141.3 ms (min/avg/max), effective 13.4 Hz
+
+top - 13:48:07 up 6 min,  0 user,  load average: 10.47, 5.24, 2.17
+Tasks:  12 total,   7 running,   5 sleeping,   0 stopped,   0 zombie
+%Cpu(s): 76.2 us, 20.3 sy,  0.0 ni,  0.1 id,  0.0 wa,  2.7 hi,  0.8 si,  0.0 st 
+MiB Mem :   3669.9 total,    922.4 free,   1976.6 used,    961.6 buff/cache     
+MiB Swap:   1834.9 total,   1834.9 free,      0.0 used.   1693.3 avail Mem 
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND                                                       
+    241 root      20   0 2054936 334944 124520 R 198.3   8.9   4:55.22 policy_node                                                   
+    240 root      20   0 1159368 212604  38920 R  45.5   5.7   1:19.61 data_recorder                                                 
+    238 root      20   0 1249012 216756  37000 R  44.5   5.8   1:07.42 hardware_bridge                                               
+    237 root      20   0 1078992 202008  33576 R  36.5   5.4   1:04.89 safety_arbiter                                                
+    236 root      20   0 1143316 201172  33516 R  26.6   5.4   0:43.95 teleop_translat                                               
+    239 root      20   0 1168052 223652  62808 R  10.3   6.0   0:19.66 usb_cam_node_ex                                               
+    220 root      20   0 1152668 205056  32172 S   0.3   5.5   0:03.60 ros2                                                          
+      1 root      20   0    4868   3964   3240 S   0.0   0.1   0:00.13 bash                                                          
+     24 root      20   0    4972   3996   3240 S   0.0   0.1   0:00.10 bash                                                          
+    163 root      20   0    4868   3964   3244 S   0.0   0.1   0:00.08 bash                                                          
+    182 root      20   0 1073364 200956  32208 S   0.0   5.3   0:02.88 python3                                                       
+    395 root      20   0    9228   5064   2948 R   0.0   0.1   0:00.02 top
+
+
+
+onnx_intra_op_threads: 2
+onnx_inter_op_threads: 1
+
+[policy_node-6] [INFO] [1787150425.362243856] [policy_node]: frames 3325 (failed 0) | decode 9.5/15.2/31.6 ms (min/avg/max), effective 65.6 Hz | preprocess 7.0/11.5/27.4 ms (min/avg/max), effective 87.2 Hz | inference 17.8/32.9/72.0 ms (min/avg/max), effective 30.4 Hz | total 37.6/59.7/100.0 ms (min/avg/max), effective 16.8 Hz
+[hardware_bridge-3] [INFO] [1787150426.806243307] [hardware_bridge]: rtt min/avg/max 8.1/22.4/87.4 ms over 193 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787150430.367388784] [policy_node]: frames 3386 (failed 0) | decode 9.3/14.4/27.7 ms (min/avg/max), effective 69.7 Hz | preprocess 6.9/10.6/18.6 ms (min/avg/max), effective 94.5 Hz | inference 17.7/31.5/60.8 ms (min/avg/max), effective 31.7 Hz | total 39.0/56.6/89.2 ms (min/avg/max), effective 17.7 Hz
+[hardware_bridge-3] [INFO] [1787150431.806200236] [hardware_bridge]: rtt min/avg/max 8.5/21.4/57.6 ms over 197 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787150435.375233251] [policy_node]: frames 3445 (failed 0) | decode 9.3/16.6/41.6 ms (min/avg/max), effective 60.1 Hz | preprocess 7.0/11.6/42.4 ms (min/avg/max), effective 86.0 Hz | inference 18.3/33.6/76.0 ms (min/avg/max), effective 29.7 Hz | total 34.7/62.1/125.0 ms (min/avg/max), effective 16.1 Hz
+[hardware_bridge-3] [INFO] [1787150436.813834609] [hardware_bridge]: rtt min/avg/max 8.8/21.0/66.8 ms over 199 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787150440.457427592] [policy_node]: frames 3512 (failed 0) | decode 9.7/14.5/30.7 ms (min/avg/max), effective 69.1 Hz | preprocess 7.0/10.6/22.0 ms (min/avg/max), effective 94.1 Hz | inference 18.3/29.4/57.3 ms (min/avg/max), effective 34.0 Hz | total 38.6/54.7/98.5 ms (min/avg/max), effective 18.3 Hz
+[hardware_bridge-3] [INFO] [1787150441.814282100] [hardware_bridge]: rtt min/avg/max 9.0/22.0/62.8 ms over 199 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787150445.532118118] [policy_node]: frames 3581 (failed 0) | decode 9.8/14.7/37.7 ms (min/avg/max), effective 68.1 Hz | preprocess 7.0/9.9/25.7 ms (min/avg/max), effective 101.4 Hz | inference 19.8/31.7/65.8 ms (min/avg/max), effective 31.5 Hz | total 39.3/56.5/112.4 ms (min/avg/max), effective 17.7 Hz
+[hardware_bridge-3] [INFO] [1787150446.822909342] [hardware_bridge]: rtt min/avg/max 8.3/22.4/72.7 ms over 194 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787150450.679912515] [policy_node]: frames 3647 (failed 0) | decode 9.7/15.0/35.6 ms (min/avg/max), effective 66.7 Hz | preprocess 6.9/10.6/25.9 ms (min/avg/max), effective 94.3 Hz | inference 19.6/31.4/73.1 ms (min/avg/max), effective 31.9 Hz | total 39.5/57.1/113.9 ms (min/avg/max), effective 17.5 Hz
+[hardware_bridge-3] [INFO] [1787150451.848882708] [hardware_bridge]: rtt min/avg/max 8.6/23.2/72.4 ms over 190 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787150455.704509493] [policy_node]: frames 3708 (failed 0) | decode 9.8/14.7/30.6 ms (min/avg/max), effective 68.1 Hz | preprocess 6.9/11.0/29.7 ms (min/avg/max), effective 91.2 Hz | inference 19.3/28.8/41.1 ms (min/avg/max), effective 34.7 Hz | total 38.7/54.6/84.4 ms (min/avg/max), effective 18.3 Hz
+[hardware_bridge-3] [INFO] [1787150456.866019353] [hardware_bridge]: rtt min/avg/max 9.2/22.0/72.9 ms over 195 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787150460.738777964] [policy_node]: frames 3766 (failed 0) | decode 9.0/16.0/39.0 ms (min/avg/max), effective 62.6 Hz | preprocess 7.1/11.1/21.4 ms (min/avg/max), effective 89.8 Hz | inference 19.4/29.9/57.4 ms (min/avg/max), effective 33.4 Hz | total 37.2/57.2/113.6 ms (min/avg/max), effective 17.5 Hz
+[hardware_bridge-3] [INFO] [1787150461.860069599] [hardware_bridge]: rtt min/avg/max 8.4/21.8/54.9 ms over 196 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787150465.838330519] [policy_node]: frames 3827 (failed 0) | decode 9.4/14.2/28.8 ms (min/avg/max), effective 70.6 Hz | preprocess 6.9/9.8/26.3 ms (min/avg/max), effective 102.4 Hz | inference 18.8/30.6/56.5 ms (min/avg/max), effective 32.7 Hz | total 36.0/54.6/93.4 ms (min/avg/max), effective 18.3 Hz
+ 
+
+ top - 14:40:59 up 22 min,  0 user,  load average: 8.36, 6.15, 3.09
+Tasks:  12 total,   4 running,   8 sleeping,   0 stopped,   0 zombie
+%Cpu(s): 83.8 us, 10.1 sy,  0.0 ni,  2.3 id,  0.1 wa,  3.0 hi,  0.7 si,  0.0 st 
+MiB Mem :   3669.9 total,    982.9 free,   1968.3 used,    915.5 buff/cache     
+MiB Swap:   1834.9 total,   1834.9 free,      0.0 used.   1701.5 avail Mem 
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND                                                       
+    389 root      20   0 1914016 336028 124148 R 136.5   8.9   7:15.92 policy_node                                                   
+    388 root      20   0 1158748 212424  38812 R  71.1   5.7   3:31.23 data_recorder                                                 
+    386 root      20   0 1248980 217064  37012 R  52.0   5.8   2:30.27 hardware_bridge                                               
+    385 root      20   0 1078996 201936  33436 S  46.4   5.4   2:25.14 safety_arbiter                                                
+    384 root      20   0 1143288 201048  33296 S  28.9   5.3   1:37.97 teleop_translat                                               
+    387 root      20   0 1233612 219260  62112 S  10.9   5.8   0:38.17 usb_cam_node_ex                                               
+    367 root      20   0 1152668 205188  31848 S   0.3   5.5   0:04.66 ros2                                                          
+    493 root      20   0 1073312 200156  32312 S   0.3   5.3   0:03.05 python3                                                       
+      1 root      20   0    4868   3964   3240 S   0.0   0.1   0:00.12 bash                                                          
+     12 root      20   0    4988   4040   3228 S   0.0   0.1   0:00.18 bash                                                          
+    342 root      20   0    4868   3968   3244 S   0.0   0.1   0:00.07 bash                                                          
+    562 root      20   0    9228   5052   2928 R   0.0   0.1   0:00.25 top
+
+
+onnx_intra_op_threads: 1
+onnx_inter_op_threads: 1
+
+[hardware_bridge-3] [INFO] [1787152364.431107398] [hardware_bridge]: rtt min/avg/max 8.4/17.5/38.7 ms over 228 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787152368.909688534] [policy_node]: frames 2510 (failed 0) | decode 9.2/11.0/21.5 ms (min/avg/max), effective 91.0 Hz | preprocess 6.9/8.2/22.7 ms (min/avg/max), effective 121.5 Hz | inference 31.7/39.8/63.6 ms (min/avg/max), effective 25.1 Hz | total 48.8/59.1/92.1 ms (min/avg/max), effective 16.9 Hz
+[hardware_bridge-3] [INFO] [1787152369.442448443] [hardware_bridge]: rtt min/avg/max 8.6/17.1/44.6 ms over 230 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787152373.937116770] [policy_node]: frames 2578 (failed 0) | decode 9.2/11.6/18.7 ms (min/avg/max), effective 86.5 Hz | preprocess 6.9/8.5/22.3 ms (min/avg/max), effective 117.2 Hz | inference 31.1/39.8/59.4 ms (min/avg/max), effective 25.1 Hz | total 47.3/60.0/95.9 ms (min/avg/max), effective 16.7 Hz
+[hardware_bridge-3] [INFO] [1787152374.451782295] [hardware_bridge]: rtt min/avg/max 8.8/17.9/47.5 ms over 222 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787152378.970235483] [policy_node]: frames 2644 (failed 0) | decode 9.1/11.1/20.3 ms (min/avg/max), effective 89.9 Hz | preprocess 6.8/7.9/13.1 ms (min/avg/max), effective 126.2 Hz | inference 31.2/38.3/58.9 ms (min/avg/max), effective 26.1 Hz | total 48.7/57.4/84.6 ms (min/avg/max), effective 17.4 Hz
+[hardware_bridge-3] [INFO] [1787152379.466880062] [hardware_bridge]: rtt min/avg/max 9.0/18.3/44.1 ms over 226 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787152384.002780974] [policy_node]: frames 2714 (failed 0) | decode 8.6/11.4/21.5 ms (min/avg/max), effective 87.9 Hz | preprocess 6.9/8.2/13.7 ms (min/avg/max), effective 122.1 Hz | inference 31.6/38.3/65.4 ms (min/avg/max), effective 26.1 Hz | total 48.1/57.9/94.7 ms (min/avg/max), effective 17.3 Hz
+
+top - 15:12:58 up 54 min,  0 user,  load average: 8.19, 4.52, 2.36
+
+Tasks:  12 total,   6 running,   6 sleeping,   0 stopped,   0 zombie
+
+%Cpu(s): 75.0 us, 10.7 sy,  0.0 ni,  9.9 id,  0.2 wa,  3.2 hi,  1.1 si,  0.0 st 
+
+MiB Mem :   3669.9 total,    905.9 free,   1985.7 used,    975.8 buff/cache     
+
+MiB Swap:   1834.9 total,   1834.9 free,      0.0 used.   1684.1 avail Mem 
+
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND                                                                                                    
+
+    881 root      20   0 1774828 337368 125732 R  87.7   9.0   2:51.99 policy_node                                                                                                
+
+    880 root      20   0 1028892 213280  39040 R  85.7   5.7   2:44.01 data_recorder                                                                                              
+
+    878 root      20   0 1184460 217008  37092 S  55.8   5.8   1:43.18 hardware_bridge                                                                                            
+
+    877 root      20   0 1013448 202052  33640 R  54.2   5.4   1:47.56 safety_arbiter                                                                                             
+
+    876 root      20   0 1012276 201080  33480 R  21.6   5.4   0:45.77 teleop_translat                                                                                            
+
+    879 root      20   0 1102532 219772  63036 R  12.0   5.8   0:26.45 usb_cam_node_ex                                                                                            
+
+    860 root      20   0 1087132 205084  32216 S   0.3   5.5   0:03.80 ros2                                                                                                       
+
+   1028 root      20   0    9228   5064   2948 R   0.3   0.1   0:00.12 top                                                                                                        
+
+      1 root      20   0    4868   3964   3240 S   0.0   0.1   0:00.12 bash                                                                                                       
+
+     12 root      20   0    4988   4040   3228 S   0.0   0.1   0:00.26 bash                                                                                                       
+
+    342 root      20   0    4868   3968   3244 S   0.0   0.1   0:00.08 bash                                                                                                       
+
+    493 root      20   0 1073472 200632  32160 S   0.0   5.3   0:08.85 python3    
+
+Full stack with Schedule FIFO and max_inference_hz = 0.0
+onnx_intra_op_threads: 2
+onnx_inter_op_threads: 1
+
+[hardware_bridge-3] [INFO] [1787153338.763297431] [hardware_bridge]: rtt min/avg/max 8.6/19.2/53.9 ms over 216 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787153341.035623831] [policy_node]: frames 1654 (failed 0) | decode 9.2/13.1/32.2 ms (min/avg/max), effective 76.3 Hz | preprocess 6.9/9.9/26.9 ms (min/avg/max), effective 101.5 Hz | inference 17.5/28.8/59.9 ms (min/avg/max), effective 34.8 Hz | total 36.9/51.9/119.1 ms (min/avg/max), effective 19.3 Hz
+[hardware_bridge-3] [INFO] [1787153343.762999086] [hardware_bridge]: rtt min/avg/max 8.4/18.5/44.9 ms over 221 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787153346.100384215] [policy_node]: frames 1719 (failed 0) | decode 9.7/14.7/33.6 ms (min/avg/max), effective 68.2 Hz | preprocess 6.9/10.8/28.2 ms (min/avg/max), effective 92.6 Hz | inference 21.2/29.8/61.4 ms (min/avg/max), effective 33.6 Hz | total 39.5/55.4/108.0 ms (min/avg/max), effective 18.1 Hz
+[hardware_bridge-3] [INFO] [1787153348.791801416] [hardware_bridge]: rtt min/avg/max 8.8/19.4/47.7 ms over 221 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787153351.138035259] [policy_node]: frames 1788 (failed 0) | decode 9.2/14.0/38.9 ms (min/avg/max), effective 71.3 Hz | preprocess 7.0/9.8/22.5 ms (min/avg/max), effective 101.8 Hz | inference 19.8/30.1/69.5 ms (min/avg/max), effective 33.2 Hz | total 37.5/54.1/106.5 ms (min/avg/max), effective 18.5 Hz
+[hardware_bridge-3] [INFO] [1787153353.774841743] [hardware_bridge]: rtt min/avg/max 8.6/18.5/41.6 ms over 219 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787153356.182470597] [policy_node]: frames 1856 (failed 0) | decode 9.3/13.9/40.3 ms (min/avg/max), effective 71.8 Hz | preprocess 7.0/10.8/31.7 ms (min/avg/max), effective 92.3 Hz | inference 18.0/28.8/59.7 ms (min/avg/max), effective 34.7 Hz | total 38.0/53.8/86.2 ms (min/avg/max), effective 18.6 Hz
+[hardware_bridge-3] [INFO] [1787153358.778642592] [hardware_bridge]: rtt min/avg/max 9.2/19.4/47.1 ms over 217 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787153361.215378091] [policy_node]: frames 1919 (failed 0) | decode 9.7/12.9/28.4 ms (min/avg/max), effective 77.3 Hz | preprocess 6.9/9.3/22.7 ms (min/avg/max), effective 108.1 Hz | inference 19.8/31.0/57.6 ms (min/avg/max), effective 32.2 Hz | total 38.2/53.3/84.2 ms (min/avg/max), effective 18.7 Hz
+[hardware_bridge-3] [INFO] [1787153363.780011170] [hardware_bridge]: rtt min/avg/max 8.1/18.8/58.5 ms over 222 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787153366.229424625] [policy_node]: frames 1987 (failed 0) | decode 9.7/14.4/34.6 ms (min/avg/max), effective 69.5 Hz | preprocess 7.0/10.3/25.3 ms (min/avg/max), effective 97.2 Hz | inference 17.8/30.1/64.3 ms (min/avg/max), effective 33.2 Hz | total 38.2/54.9/112.4 ms (min/avg/max), effective 18.2 Hz
+[hardware_bridge-3] [INFO] [1787153368.799788328] [hardware_bridge]: rtt min/avg/max 8.8/20.1/61.7 ms over 211 calls, errors=0, seq_mismatch=0
+
+top - 15:29:24 up  1:10,  0 user,  load average: 8.15, 3.76, 2.37
+Tasks:  12 total,   4 running,   8 sleeping,   0 stopped,   0 zombie
+%Cpu(s): 85.2 us,  9.9 sy,  0.0 ni,  1.0 id,  0.0 wa,  3.0 hi,  0.8 si,  0.0 st 
+MiB Mem :   3669.9 total,    897.9 free,   1986.3 used,    983.3 buff/cache     
+MiB Swap:   1834.9 total,   1834.9 free,      0.0 used.   1683.6 avail Mem 
+
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND                                                                                                    
+   1338 root      20   0 1845032 334200 125776 S 149.8   8.9   3:42.06 policy_node                                                                                                
+   1337 root      20   0 1027056 211428  39040 R  69.8   5.6   1:43.24 data_recorder                                                                                              
+   1335 root      20   0 1183440 216892  37092 S  54.2   5.8   1:13.35 hardware_bridge                                                                                            
+   1334 root      20   0 1013576 202044  33600 R  50.2   5.4   1:19.92 safety_arbiter                                                                                             
+   1333 root      20   0 1012220 201052  33444 S  21.3   5.4   0:34.31 teleop_translat                                                                                            
+   1336 root      20   0 1102528 219788  63024 R  12.3   5.8   0:19.11 usb_cam_node_ex                                                                                            
+    493 root      20   0 1073632 200764  32160 S   0.3   5.3   0:11.99 python3                                                                                                    
+   1317 root      20   0 1087132 204648  32216 S   0.3   5.4   0:03.58 ros2                                                                                                       
+      1 root      20   0    4868   3964   3240 S   0.0   0.1   0:00.12 bash                                                                                                       
+     12 root      20   0    4988   4040   3228 S   0.0   0.1   0:00.31 bash                                                                                                       
+    342 root      20   0    4868   3972   3244 S   0.0   0.1   0:00.09 bash                                                                                                       
+   1484 root      20   0    9228   5068   2948 R   0.0   0.1   0:00.09 top 
+
+
+Full stack with Schedule FIFO and max_inference_hz = 0.0
+onnx_intra_op_threads: 1
+onnx_inter_op_threads: 1
+
+[policy_node-6] [INFO] [1787153880.804437254] [policy_node]: frames 2434 (failed 0) | decode 9.4/11.8/23.1 ms (min/avg/max), effective 84.7 Hz | preprocess 6.7/8.5/16.8 ms (min/avg/max), effective 117.3 Hz | inference 31.6/40.3/56.3 ms (min/avg/max), effective 24.8 Hz | total 48.3/60.7/88.3 ms (min/avg/max), effective 16.5 Hz
+[hardware_bridge-3] [INFO] [1787153883.146103737] [hardware_bridge]: rtt min/avg/max 8.6/16.0/37.5 ms over 239 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787153885.817669542] [policy_node]: frames 2498 (failed 0) | decode 9.6/11.6/26.4 ms (min/avg/max), effective 86.4 Hz | preprocess 6.9/8.3/13.4 ms (min/avg/max), effective 120.3 Hz | inference 33.1/39.2/67.0 ms (min/avg/max), effective 25.5 Hz | total 51.3/59.2/100.8 ms (min/avg/max), effective 16.9 Hz
+[hardware_bridge-3] [INFO] [1787153888.156798046] [hardware_bridge]: rtt min/avg/max 8.7/16.6/38.4 ms over 234 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787153890.818981039] [policy_node]: frames 2567 (failed 0) | decode 9.8/11.8/18.3 ms (min/avg/max), effective 84.4 Hz | preprocess 7.0/8.3/19.3 ms (min/avg/max), effective 120.6 Hz | inference 32.8/40.2/59.4 ms (min/avg/max), effective 24.9 Hz | total 52.0/60.5/96.5 ms (min/avg/max), effective 16.5 Hz
+[hardware_bridge-3] [INFO] [1787153893.163978075] [hardware_bridge]: rtt min/avg/max 8.6/16.3/52.5 ms over 235 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787153895.878693698] [policy_node]: frames 2632 (failed 0) | decode 9.3/11.5/18.1 ms (min/avg/max), effective 87.3 Hz | preprocess 6.9/8.2/12.8 ms (min/avg/max), effective 121.9 Hz | inference 31.5/39.8/74.0 ms (min/avg/max), effective 25.1 Hz | total 49.0/59.6/100.5 ms (min/avg/max), effective 16.8 Hz
+[hardware_bridge-3] [INFO] [1787153898.163632080] [hardware_bridge]: rtt min/avg/max 8.2/15.4/38.9 ms over 240 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787153900.916267532] [policy_node]: frames 2701 (failed 0) | decode 8.9/11.1/16.9 ms (min/avg/max), effective 90.3 Hz | preprocess 6.8/7.9/12.0 ms (min/avg/max), effective 126.7 Hz | inference 31.9/38.5/59.0 ms (min/avg/max), effective 26.0 Hz | total 48.4/57.6/78.2 ms (min/avg/max), effective 17.4 Hz
+[hardware_bridge-3] [INFO] [1787153903.185563216] [hardware_bridge]: rtt min/avg/max 8.5/16.2/44.7 ms over 234 calls, errors=0, seq_mismatch=0
+[policy_node-6] [INFO] [1787153905.949922186] [policy_node]: frames 2765 (failed 0) | decode 9.1/10.9/23.5 ms (min/avg/max), effective 92.1 Hz | preprocess 6.8/8.1/18.5 ms (min/avg/max), effective 123.3 Hz | inference 30.5/38.5/82.3 ms (min/avg/max), effective 26.0 Hz | total 47.0/57.6/108.7 ms (min/avg/max), effective 17.4 Hz
+
+top - 15:38:21 up  1:19,  0 user,  load average: 6.34, 3.90, 2.68
+Tasks:  12 total,   5 running,   7 sleeping,   0 stopped,   0 zombie
+%Cpu(s): 72.2 us, 14.8 sy,  0.0 ni,  8.5 id,  0.3 wa,  3.2 hi,  1.0 si,  0.0 st 
+MiB Mem :   3669.9 total,    890.1 free,   1990.0 used,    987.6 buff/cache     
+MiB Swap:   1834.9 total,   1834.9 free,      0.0 used.   1679.9 avail Mem 
+
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND                                                                                                    
+   1799 root      20   0 1774824 337344 125692 R  87.0   9.0   2:57.30 policy_node                                                                                                
+   1798 root      20   0 1026496 210872  39040 R  85.3   5.6   2:58.61 data_recorder                                                                                              
+   1795 root      20   0 1013452 202008  33620 S  61.7   5.4   2:10.25 safety_arbiter                                                                                             
+   1796 root      20   0 1184496 217092  37176 R  55.3   5.8   1:52.29 hardware_bridge                                                                                            
+   1794 root      20   0 1012284 201540  33444 R  20.7   5.4   0:47.74 teleop_translat                                                                                            
+   1797 root      20   0 1102480 224268  63036 S  12.0   6.0   0:27.72 usb_cam_node_ex                                                                                            
+    493 root      20   0 1073792 200956  32276 S   0.3   5.3   0:13.86 python3                                                                                                    
+   1778 root      20   0 1087132 205532  32272 S   0.3   5.5   0:03.77 ros2                                                                                                       
+      1 root      20   0    4868   3964   3240 S   0.0   0.1   0:00.12 bash                                                                                                       
+     12 root      20   0    4988   4048   3228 S   0.0   0.1   0:00.36 bash                                                                                                       
+    342 root      20   0    4868   3972   3244 S   0.0   0.1   0:00.11 bash                                                                                                       
+   1946 root      20   0    9228   5076   2948 R   0.0   0.1   0:00.12 top            
+
+================================================================================
+ANALYSIS AND RECOMMENDED CONFIGURATION
+Arduino UNO Q (Qualcomm QRB2210, 4x Cortex-A53 @ 2.0 GHz, no NPU)
+PilotNet-class dual-head CNN, 1x3x120x160 input, ONNX Runtime CPU EP
+================================================================================
+
+--------------------------------------------------------------------------------
+1. SUMMARY TABLE -- FULL STACK (camera + teleop + arbiter + bridge + recorder
+   + policy, all concurrent). These are the only numbers that matter
+   operationally; isolated benchmarks are listed further down and DISAGREE.
+--------------------------------------------------------------------------------
+
+ Config                         policy   load   idle   inference   pipeline   RTT avg   RTT max
+                                CPU%     avg     %     avg (ms)    (Hz)       (ms)      (ms)
+ ------------------------------ ------  -----  -----  ----------  ---------  --------  --------
+ ORT default (unconstrained)    235.4    6.71    0.6   33.9-36.1  14.2-16.2   (bridge inactive)
+ threads=2, no FIFO             136.5    8.36    2.3   28.8-33.6  16.1-18.3   21-23     55-87
+ threads=1, no FIFO              87.7    8.19    9.9   38.3-39.8  16.7-17.4   17.1-18.3 38.7-47.5
+ threads=2, FIFO                149.8    8.15    1.0   28.8-31.0  18.1-19.3   18.5-20.1 41.6-61.7
+ threads=1, FIFO   <-- PICK      87.0    6.34    8.5   38.5-40.3  16.5-17.4   15.4-16.6 37.5-52.5
+
+ Reference baseline: hardware_bridge RTT with NO policy_node running = 2.24 ms
+ avg (measured earlier in the project, after the Wi-Fi power-save fix).
+
+--------------------------------------------------------------------------------
+2. RECOMMENDED CONFIGURATION
+--------------------------------------------------------------------------------
+
+  policy_node:
+    onnx_intra_op_threads: 1
+    onnx_inter_op_threads: 1
+    max_inference_hz: 0.0        # unlimited; the pipeline self-limits at ~17 Hz
+
+  hardware_bridge:
+    SCHED_FIFO elevation on the sender thread: ENABLED
+    (requires root / CAP_SYS_NICE; logs "sender thread elevated to
+     SCHED_FIFO priority 99" on success -- verify this line appears)
+
+  safety_arbiter:
+    policy_timeout_s: 0.30       # NOT teleop_timeout_s -- see section 5
+
+  Delivers: ~16.5-17.4 Hz end-to-end policy rate, 15.4-16.6 ms mean bridge RTT
+  (37.5-52.5 ms worst case), 8.5% CPU idle, load average 6.34.
+
+--------------------------------------------------------------------------------
+3. WHY threads=1 BEATS threads=2 (the counter-intuitive result)
+--------------------------------------------------------------------------------
+
+threads=2 IS genuinely faster at pure inference, even under load: 28.8-31.0 ms
+vs 38.5-40.3 ms. It also wins slightly on end-to-end pipeline rate
+(18.1-19.3 Hz vs 16.5-17.4 Hz). So why not use it?
+
+Because the extra ~1.7 Hz costs:
+  - 72% more CPU in policy_node (149.8% vs 87.0%)
+  - nearly all remaining system headroom (idle 1.0% vs 8.5%)
+  - measurably worse actuation RTT (avg +3 ms, max +9 ms)
+
+And it buys almost nothing physically. At the policy's 0.1 m/s forward
+setpoint:
+    17.0 Hz -> 5.9 mm of travel between control updates
+    19.0 Hz -> 5.3 mm
+A 0.6 mm difference. Not worth spending the entire CPU reserve and degrading
+the safety-critical path.
+
+A second-order effect is visible in the data and worth understanding: with
+threads=2, decode and preprocess get SLOWER (decode ~14 ms vs ~11 ms,
+preprocess ~10 ms vs ~8.2 ms). ONNX Runtime's extra worker threads are
+competing with the same process's own single-threaded OpenCV decode/resize
+work. The ONNX pool steals CPU from the pipeline stages feeding it, which is
+why doubling inference threads yields far less than a proportional speedup.
+
+--------------------------------------------------------------------------------
+4. ISOLATED BENCHMARKS DO NOT PREDICT CONTENDED PERFORMANCE
+--------------------------------------------------------------------------------
+
+Standalone benchmark_inference ranking:
+    ORT default : 9.92 ms   (best)
+    threads=2   : 13.99 ms
+    threads=1   : 26.05 ms  (worst)
+
+Full-stack ranking (by RTT and headroom):
+    threads=1   : best
+    threads=2   : middling
+    ORT default : worst (235% CPU, 0.6% idle)
+
+The ranking INVERTS completely. With four free cores, more threads win. With
+six CPU-hungry processes sharing four cores, a bigger thread pool just means
+policy_node fights harder with everything else -- including its own decode
+stage. Always re-measure under the full graph before trusting a tuning
+decision. This mirrors the earlier Cyclone-vs-FastDDS result on this same
+board, where the "better" option in principle was worse in practice.
+
+--------------------------------------------------------------------------------
+5. BUG FOUND WHILE ANALYSING THESE NUMBERS: policy staleness timeout
+--------------------------------------------------------------------------------
+
+safety_arbiter originally guarded /policy/cmd with teleop_timeout_s (0.15 s).
+But the two streams differ by an order of magnitude in rate:
+    teleop/cmd  : 50 Hz  -> 20 ms period
+    policy/cmd  : ~17 Hz -> 59 ms period, 119.1 ms worst case measured
+
+That left roughly 30 ms of margin. One slow inference frame -- well within
+observed jitter -- would have tripped a spurious FAILSAFE mid-autonomous-drive.
+
+FIXED: added a separate policy_timeout_s, default 0.30 s (~5 policy periods,
+~2.5x worst-case observed latency). Re-tune if model size or resolution
+changes.
+
+--------------------------------------------------------------------------------
+6. WHERE THE TIME ACTUALLY GOES (recommended config)
+--------------------------------------------------------------------------------
+
+    JPEG decode      ~11 ms   (19%)
+    crop + resize     ~8 ms   (14%)
+    ONNX inference   ~39 ms   (67%)
+    ------------------------------
+    total            ~58 ms   -> ~17 Hz
+
+Inference dominates, but decode+preprocess together are ~19 ms -- a third of
+the inference cost, and not negligible. Two future levers if more rate is
+needed:
+  (a) Lower camera resolution below 640x480. Cuts decode cost directly. The
+      policy only consumes 160x120 anyway. CAVEAT: verify FOV is preserved --
+      some UVC modes crop rather than bin, and peripheral vision matters more
+      to a path-following policy than resolution does.
+  (b) Convert ONNX -> LiteRT/TFLite + XNNPACK. This was the runtime the
+      original design research recommended for this chip; ONNX Runtime CPU was
+      chosen here only because it required no conversion step. XNNPACK ships
+      Cortex-A53-tuned microkernels and may beat ORT meaningfully. UNTESTED --
+      worth measuring before assuming.
+
+--------------------------------------------------------------------------------
+7. SAFETY MARGIN ASSESSMENT
+--------------------------------------------------------------------------------
+
+  MCU watchdog trip threshold          : 150 ms
+  Worst observed RTT (recommended cfg) :  52.5 ms
+  Margin                               : ~2.9x
+
+Acceptable, but this is not comfortable margin, and it degraded from a 2.24 ms
+baseline purely from CPU contention. MONITOR the hardware_bridge RTT line
+during every autonomous session. If RTT max starts approaching ~100 ms,
+stop and reduce load (lower max_inference_hz, or disable the recorder for
+non-data-collection runs) before continuing.
+
+Note also that with no physical e-stop on this vehicle, the deadman release is
+the primary interlock. It is a software path, and it depends on this same
+contended CPU. That is a further argument for keeping the 8.5% idle headroom
+rather than spending it on 1.7 Hz.
+
+--------------------------------------------------------------------------------
+8. WHAT THIS SAYS ABOUT THE UNO Q AS AN INFERENCE PLATFORM
+--------------------------------------------------------------------------------
+
+A PilotNet-class CNN (~250k params, 120x160 input) runs at ~25 Hz pure
+inference and ~17 Hz end-to-end alongside a full ROS 2 control graph, on CPU
+alone, with no NPU. That validates the original architecture decision to keep
+the policy tiny.
+
+For calibration: the design research anchored on DeepPicar's 18.49 ms/frame
+for a comparable net on a Cortex-A53 @ 1.2 GHz. Isolated, this board hit
+9.92 ms -- consistent with a faster clock and a better runtime. Contended, it
+is 38-40 ms. The gap between those two numbers IS the finding: on a 4-core SBC
+running a real robot stack, inference cost roughly quadruples versus a clean
+benchmark. Any future model-size decision should budget against the contended
+number, not the isolated one.
+
+There is no headroom here for a MobileNet-class backbone, confirming the
+earlier decision to train PilotNet from scratch rather than fine-tune a
+pretrained ImageNet model.
