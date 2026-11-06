@@ -1,3 +1,4 @@
+
 # MobileBot
 
 A camera-only autonomous rover that drives by behaviour cloning, built on the Arduino UNO Q. Submitted to the Arduino Physical AI Challenge India 2026 (Robu.in x Arduino), Robotics & Interactive AI track.
@@ -7,6 +8,7 @@ A small CNN looks at the road ahead through a single USB camera and outputs a st
 ## Demo
 
 [Watch a 12 s clip of the rover driving](docs/demo.mp4)
+https://github.com/user-attachments/assets/1ace6272-8b3a-4374-ac77-09aaaaf123d5
 
 ## Overview
 
